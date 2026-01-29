@@ -68,8 +68,9 @@ erDiagram
 - Inicializar as Tabelas:
 - sudo apt update
 - sudo apt install mysql-server
-- mysql -u root -p
-- Digite a senha que você configurou (Senha@Forte2026).
+- sudo mysql
+- ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Senha@Forte2026';
+- FLUSH PRIVILEGES;
 - CREATE DATABASE gerenciador;
 - SHOW DATABASES;
 - exit;
