@@ -56,7 +56,6 @@ export default function Home() {
         const formData = new FormData();
         formData.append("cpf", novoCpf);
         formData.append("tipo_documento", tipo);
-        // Esta linha envia o nome formatado (ex: rg_12345678900.pdf)
         formData.append("novo_nome_automatico", gerarNomeAutomatico(tipo, novoCpf));
         formData.append("file", file);
 
@@ -113,13 +112,12 @@ export default function Home() {
     return (
         <div className="container">
             <header>
-                <h1>📄 Gerenciador de PDFs por CPF</h1>
+                <h1>📄 Gerenciador de Arquivos</h1>
                 <p>Envie, busque e organize seus documentos PDF de forma simples</p>
                 <button onClick={handleLogout} className="btn-logout">Sair</button>
             </header>
 
             <main>
-                {/* Buscar CPF */}
                 <section className="buscar">
                     <label htmlFor="busca-cpf" className="sr-only">Buscar por CPF:</label>
                     <input
@@ -131,7 +129,6 @@ export default function Home() {
                     <button onClick={handleBusca}>Buscar Documentos</button>
                 </section>
 
-                {/* Cadastrar PDF */}
                 <section className="novo-arquivo">
                     <h3>Cadastrar Novo PDF</h3>
                     <div className="form-group">
@@ -162,7 +159,6 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* Lista de arquivos - SÓ APARECE SE HOUVER RESULTADO */}
                 {resultado && (
                     <section className="lista">
                         <h2>Usuário: {resultado.usuario.nome || "Não identificado"} | CPF: {resultado.usuario.cpf}</h2>
@@ -172,8 +168,9 @@ export default function Home() {
                                     <div className="card" key={a.id}>
                                         <div className="arquivo-info">
                                             <strong>{a.tipo_documento}:</strong>
+                                            {/* Link para o arquivo usando o nome limpo armazenado no banco */}
                                             <a href={a.caminho_arquivo} target="_blank" rel="noopener noreferrer">
-                                                Visualizar PDF
+                                                {a.nome_armazenado}
                                             </a>
                                         </div>
                                         <div className="arquivo-actions">
@@ -207,24 +204,18 @@ export default function Home() {
                 header { text-align: center; margin-bottom: 40px; }
                 h1 { color: #4a4a8c; }
                 .btn-logout { background: #999; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-                
                 .buscar, .novo-arquivo { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center; }
                 input, select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin: 5px; }
-                
                 button { padding: 10px 20px; border-radius: 5px; background: #4a4a8c; color: white; border: none; cursor: pointer; font-weight: bold; }
                 button:hover { opacity: 0.9; }
                 button:focus { outline: 3px solid #ffc107; }
-
                 .arquivos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
                 .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
-                
-                .arquivo-info a { display: block; margin-top: 10px; color: #4a4a8c; font-weight: bold; }
+                .arquivo-info a { display: block; margin-top: 10px; color: #4a4a8c; font-weight: bold; word-break: break-all; }
                 .arquivo-actions { margin-top: 15px; display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px; }
-                
                 .btn-edit { background: #ffc107; color: #333; flex: 1; }
                 .btn-delete { background: #d7263d; color: white; flex: 1; }
                 .btn-success { background: #28a745; }
-
                 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
             `}</style>
         </div>

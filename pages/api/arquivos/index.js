@@ -7,7 +7,18 @@ const upload = multer({
   storage: multer.diskStorage({
     destination: "./public/uploads",
     filename: (req, file, cb) => {
-      cb(null, Date.now() + "-" + file.originalname);
+      // 1. Corrigir o encoding do nome original (UTF-8)
+      const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+      
+      // 2. Pegar o CPF e Tipo que o frontend enviou
+      const cpf = req.body.cpf || 'sem-cpf';
+      const tipo = (req.body.tipo_documento || 'doc').replace(/\//g, '-'); // Troca / por - (ex: RG/CIN vira RG-CIN)
+
+      // 3. Criar um nome limpo: cpf-tipo-timestamp.pdf
+      const extension = originalName.split('.').pop();
+      const novoNome = `${cpf}-${tipo}-${Date.now()}.${extension}`;
+      
+      cb(null, novoNome);
     },
   }),
 });
@@ -25,27 +36,23 @@ const apiRoute = nc({
 apiRoute.use(upload.single("file"));
 
 apiRoute.post(async (req, res) => {
-  // O Multer coloca os textos em req.body e o arquivo em req.file
-  const { cpf, tipo_documento, novo_nome_automatico } = req.body;
-
+  const { cpf, tipo_documento } = req.body;
+  
   if (!req.file) return res.status(400).json({ error: "Arquivo não enviado" });
 
   try {
-    // 1. Busca ou cria o usuário
-    let [usuario] = await Usuario.findOrCreate({
+    let [usuario] = await Usuario.findOrCreate({ 
       where: { cpf },
-      defaults: { nome: "Usuário Novo", email: `${cpf}@sistema.com`, senha: "123" }
+      defaults: { nome: "Usuário Novo", email: `${cpf}@sistema.com`, senha: "123" } 
     });
 
-    // 2. SALVA NO BANCO COM O NOME FORMATADO
     const arquivo = await Arquivo.create({
       usuario_id: usuario.id,
       tipo_documento: tipo_documento,
-      nome_original: req.file.originalname,
-      // AQUI: Pegamos o nome que veio do frontend (ex: cpf_123.pdf)
-      nome_armazenado: novo_nome_automatico,
-      // O caminho aponta para o arquivo físico que o Multer salvou
-      caminho_arquivo: `/uploads/${req.file.filename}`,
+      nome_original: Buffer.from(req.file.originalname, 'latin1').toString('utf8'),
+      // AQUI: Pegamos o nome exato que o Multer gerou para o disco
+      nome_armazenado: req.file.filename, 
+      caminho_arquivo: `/uploads/${req.file.filename}`, 
       tamanho: req.file.size,
       data_upload: new Date(),
     });
