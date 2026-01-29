@@ -66,6 +66,13 @@ erDiagram
 - Configurar o Banco de Dados: Certifique-se de que o MySQL está rodando e as credenciais no arquivo config/database.js estão corretas.
 
 - Inicializar as Tabelas:
+- sudo apt update
+- sudo apt install mysql-server
+- mysql -u root -p
+- Digite a senha que você configurou (Senha@Forte2026).
+- CREATE DATABASE gerenciador;
+- SHOW DATABASES;
+- exit;
 - npm run db:init
 
 - Rodar o servidor de desenvolvimento:
