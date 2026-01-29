@@ -1,7 +1,7 @@
 // config/database.js
 import { Sequelize } from "sequelize";
 
-const sequelize = new Sequelize("gerenciador", "root", "senha123", {
+const sequelize = new Sequelize("gerenciador", "root", "Senha@Forte2026", {
   host: "localhost",
   dialect: "mysql",
   logging: false,
